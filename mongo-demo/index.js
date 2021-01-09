@@ -29,7 +29,7 @@ const courseSchema = new mongoose.Schema({
           setTimeout(() => {
             const result = v && v.length > 0;
             resolve(result);
-          }, 4000);
+          }, 1000);
         });
       },
       message: "A course should have at least one tag",
@@ -55,7 +55,7 @@ const createCourse = async () => {
     author: "Mosh",
     tags: null,
     isPublished: true,
-    category: "web",
+    category: "-",
     price: 15,
   });
 
@@ -63,6 +63,9 @@ const createCourse = async () => {
     const result = await course.save();
     console.log("Result -" - result);
   } catch (err) {
+    for (const field in err.errors) {
+      console.log(err.errors[field].message);
+    }
     console.log("Error - ", err.message);
   }
 };
