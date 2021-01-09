@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 
 mongoose
-  .connect("mongodb://localhost/mongo-exercises")
+  .connect("mongodb://localhost/mongo-exercises", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+  })
   .then(() => console.log("Connected to MongoDB..."))
   .catch((err) => {
     console.error("Could not connected to MongoDB...", err);
@@ -19,6 +23,9 @@ const courseSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: ["web", "mobile", "network"],
+    lowercase: true, // convert to lowercase before validation
+    // uppercase: true,
+    trim: true,
   },
   author: String,
   tags: {
@@ -44,6 +51,8 @@ const courseSchema = new mongoose.Schema({
     },
     min: 10,
     max: 200,
+    get: (v) => Math.round(v),
+    set: (v) => Math.round(v),
   },
 });
 
@@ -52,31 +61,32 @@ const Course = mongoose.model("Course", courseSchema);
 const createCourse = async () => {
   const course = new Course({
     name: "Angular Course",
+    category: "Web",
     author: "Mosh",
-    tags: null,
+    tags: ["frontend"],
     isPublished: true,
-    category: "-",
-    price: 15,
+    price: 15.8,
   });
 
   try {
     const result = await course.save();
-    console.log("Result -" - result);
+    console.log("Result -", result);
   } catch (err) {
     for (const field in err.errors) {
       console.log(err.errors[field].message);
     }
-    console.log("Error - ", err.message);
   }
 };
 
-const getCourses = () => {
+const getCourses = async () => {
   const pageNumber = 2;
   const pageSize = 10;
 
-  return Course.find()
-    .skip((pageNumber - 1) * pageSize)
-    .limit(pageSize);
+  const courses = await Course.find({ _id: "5ff9ee85e6747c59a84f30f8" });
+
+  console.log(courses[0].price);
+  // .skip((pageNumber - 1) * pageSize)
+  // .limit(pageSize);
 };
 
 const updateCourseGetFirst = async (id) => {
@@ -108,5 +118,6 @@ const removeCourse = async (id) => {
 };
 
 (async () => {
-  await createCourse();
+  // await createCourse();
+  await getCourses();
 })();
