@@ -8,8 +8,7 @@ mongoose
   });
 
 const courseSchema = new mongoose.Schema({
-  _id: String,
-  name: String,
+  name: { type: String, required: true },
   author: String,
   tags: [String],
   date: { type: Date, default: Date.now },
@@ -18,15 +17,20 @@ const courseSchema = new mongoose.Schema({
 
 const Course = mongoose.model("Course", courseSchema);
 
-const createCourse = () => {
+const createCourse = async () => {
   const course = new Course({
-    name: "Angular Course",
+    // name: "Angular Course",
     author: "Mosh",
     tags: ["angular", "frontend"],
     isPublished: true,
   });
 
-  return course.save();
+  try {
+    const result = await course.save();
+    console.log("Result -" - result);
+  } catch (err) {
+    console.log("Error - ", err.message);
+  }
 };
 
 const getCourses = () => {
@@ -67,6 +71,5 @@ const removeCourse = async (id) => {
 };
 
 (async () => {
-  const res = await removeCourse("5a68fe2142ae6a6482c4c9cb");
-  console.log(res);
+  await createCourse();
 })();
